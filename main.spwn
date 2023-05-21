@@ -1,3 +1,7 @@
+// In order to make work this script, use spwn 0.6, in case your level doesn't open, modify 
+// the scale at line 65 to something higher. Also, you can modify how many colors do you want
+// in your image in the python file. Also, you can modify its size.
+
 extract obj_props
 let content = $.readfile("data.txt")
 

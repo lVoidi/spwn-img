@@ -1,23 +1,25 @@
 """
-Just testing with spwn
+This file will convert any image into a 32 colors image and also will scale its height
+to 100, so the image don't take too much memory and space in the level. Aditionally, to 
+make the spwn file work, it will save the info of the image in a text file. By info i mean
+the rgb values of each pixel in the image and its size.
 """
 
-# Modules
 from sys import argv
 import colorama
 from PIL import Image
 from os import getcwd
-# Class
+
 class PyImg2GD:
-    def __init__(self, imgPath: str):
+    def __init__(self, img_path: str):
         '''
-        imgPath: string
+        img_path: string
             The image path
         '''
-        self.PWD = getcwd()
-        self.IMG = imgPath
-        self.WIDTH = 80
-        self.HEIGHT = 80
+        self.cwd = getcwd()
+        self.img = img_path
+        self.width = 80
+        self.height = 80
         self.fourbit_convert()
 
     def write_values (self):
@@ -26,11 +28,11 @@ class PyImg2GD:
         image data values
         '''
 
-        with open(f"{self.PWD}/data.txt", "w+") as txt:
-            txt.write(f'{self.WIDTH} x {self.HEIGHT}/{self.pix_values()}')
+        with open(f"{self.cwd}/data.txt", "w+") as txt:
+            txt.write(f'{self.width} x {self.height}/{self.pix_values()}')
     
     def fourbit_convert (self):
-        with Image.open(self.IMG) as img:
+        with Image.open(self.img) as img:
             nimg = img.convert("P", palette=Image.ADAPTIVE, colors=32)
             fixed_height = 100
             
@@ -38,7 +40,7 @@ class PyImg2GD:
 
             width_size = int((float(nimg.size[0]) * float(height_percent)))
             nimg = nimg.resize((width_size, fixed_height), Image.ANTIALIAS)
-            self.WIDTH, self.HEIGHT = nimg.width, nimg.height
+            self.width, self.height = nimg.width, nimg.height
             nimg.save(f'IMAGE-16bit.png', format="png")
 
     def pix_values(self):
@@ -50,29 +52,29 @@ class PyImg2GD:
         example: (255, 0, 0)
         '''
         pix = ""
-        with Image.open(f'{self.PWD}/IMAGE-16bit.png') as img:
+        with Image.open(f'{self.cwd}/IMAGE-16bit.png') as img:
             for x in range(img.width):
                 for y in range(img.height):
                     nimg = img.convert("RGBA").transpose(method=Image.FLIP_LEFT_RIGHT) 
-                    CURR_PIXEL = nimg.getpixel((img.width-x-1, img.height-y-1))
-                    if len(CURR_PIXEL) == 4:
-                        pix += f'{CURR_PIXEL[0]} {CURR_PIXEL[1]} {CURR_PIXEL[2]} {CURR_PIXEL[3]}/'
+                    current_pixel = nimg.getpixel((img.width-x-1, img.height-y-1))
+                    if len(current_pixel) == 4:
+                        pix += f'{current_pixel[0]} {current_pixel[1]} {current_pixel[2]} {current_pixel[3]}/'
 
                     else:
-                        pix += f'{CURR_PIXEL[0]} {CURR_PIXEL[1]} {CURR_PIXEL[2]} 255/'
+                        pix += f'{current_pixel[0]} {current_pixel[1]} {current_pixel[2]} 255/'
                     
-                    print(f'x: {x}, y: {y}, width: {self.WIDTH}, height: {self.HEIGHT}', end="\r")
+                    print(f'x: {x}, y: {y}, width: {self.width}, height: {self.height}', end="\r")
         print()
         return pix
 
 if __name__ == "__main__":
-    IMAGE = argv[len(argv)-1]
+    image = argv[len(argv)-1]
     
-    for POSSIBLE_EXTENSION in ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'svg']:
-        if POSSIBLE_EXTENSION in IMAGE:
-            IMG_OBJ = PyImg2GD(IMAGE)
+    for possible_extension in ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'svg']:
+        if possible_extension in image:
+            image_object = PyImg2GD(image)
             print(f'{colorama.Fore.LIGHTGREEN_EX}Writting data in {colorama.Style.BRIGHT}data.txt')
-            IMG_OBJ.write_values()
+            image_object.write_values()
             exit()
         
     
